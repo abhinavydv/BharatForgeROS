@@ -5,12 +5,14 @@ from launch_ros.actions import Node
 from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 
+pkg_name = "depth"
+
 def generate_launch_description():
     urdf_path = PathJoinSubstitution(
-        [FindPackageShare("depth"), "urdf", "my_robot.urdf.xacro"]
+        [FindPackageShare(pkg_name), "urdf", "my_robot.urdf.xacro"]
     )
     rviz_config_path = PathJoinSubstitution(
-        [FindPackageShare("depth"), "rviz", "depth_robot_new.rviz"]
+        [FindPackageShare(pkg_name), "rviz", "robot_rviz_config.rviz"]
     )
 
     return LaunchDescription([
@@ -31,6 +33,10 @@ def generate_launch_description():
             arguments=['-d', LaunchConfiguration('rviz_config_path')]
         ),
         Node(
+            package=pkg_name,
+            executable='image_saver'
+        ),
+        Node(
             package='joint_state_publisher_gui',
             executable='joint_state_publisher_gui'
         ),
@@ -45,7 +51,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([
                 PathJoinSubstitution([FindPackageShare('gazebo_ros'), 'launch', 'gazebo.launch.py'])
             ]),
-            launch_arguments={'world': PathJoinSubstitution([FindPackageShare('depth'), 'worlds', 'updated_office.world'])}.items()
+            launch_arguments={'world': PathJoinSubstitution([FindPackageShare(pkg_name), 'worlds', 'updated_office.world'])}.items()
         ),
         Node(
             package='gazebo_ros',
