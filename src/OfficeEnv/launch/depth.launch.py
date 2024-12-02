@@ -5,7 +5,7 @@ from launch_ros.actions import Node
 from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 
-pkg_name = "depth"
+pkg_name = "OfficeEnv"
 
 def generate_launch_description():
     urdf_path = PathJoinSubstitution(
