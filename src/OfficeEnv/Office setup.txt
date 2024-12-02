@@ -1,0 +1,10 @@
+add in ~/.bashrc
+
+export GAZEBO_MODEL_PATH=/home/<user>/.gazebo/models:${GAZEBO_MODEL_PATH}
+
+
+copy corresponding folders to
+/usr/share/gazebo-11/media/meshes
+/usr/share/gazebo-11/media/materials/scripts
+/usr/share/gazebo-11/media/materials/textures
+
