@@ -255,4 +255,65 @@
             <robot_base_frame> ${robot_prefix}/base_footprint </robot_base_frame>
         </plugin>
     </gazebo>
+
+    <joint name="${robot_prefix}/laser_joint" type="fixed">
+        <parent link="${robot_prefix}/base_link"/>
+        <child link="${robot_prefix}/laser_frame"/>
+        <origin xyz="0.122 0 0.212" rpy="0 0 0"/>
+    </joint>
+
+    <link name="${robot_prefix}/laser_frame">
+        <visual>
+            <geometry>
+                <cylinder radius="0.05" length="0.04"/>
+            </geometry>
+            <material name="grey"/>
+        </visual>
+        <visual>
+            <origin xyz="0 0 -0.05"/>
+            <geometry>
+                <cylinder radius="0.01" length="0.1"/>
+            </geometry>
+            <material name="grey"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="0.05" length="0.04"/>
+            </geometry>
+        </collision>
+        <xacro:cylinder_inertia m="0.1" r="0.05" h="0.04" 
+                                    xyz="0 0 0" rpy="0 0 0" />
+    </link>
+
+    <gazebo reference="${robot_prefix}/laser_frame">
+        <material>Gazebo/grey</material>
+
+        <sensor name="${robot_prefix}/laser" type="ray">
+            <pose> 0 0 0 0 0 0 </pose>
+            <visualize>true</visualize>
+            <update_rate>10</update_rate>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>360</samples>
+                        <min_angle>-3.14</min_angle>
+                        <max_angle>3.14</max_angle>
+                    </horizontal>
+                </scan>
+                <range>
+                    <min>0.3</min>
+                    <max>12</max>
+                </range>
+            </ray>
+            <plugin name="laser_controller" filename="libgazebo_ros_ray_sensor.so">
+                <ros>
+                    <argument>~/out:=scan</argument>
+                </ros>
+                <output_type>sensor_msgs/LaserScan</output_type>
+                <frame_name>${robot_prefix}/laser_frame</frame_name>
+
+            </plugin>
+        </sensor>
+    </gazebo>
+
 </robot>

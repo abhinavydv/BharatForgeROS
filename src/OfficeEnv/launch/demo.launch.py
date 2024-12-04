@@ -50,10 +50,10 @@ def generate_launch_description():
             'Odom/ResetCountdown':'30',
             'Odom/GuessSmoothingDelay':'0',
             'Rtabmap/StartNewMapOnLoopClosure':'true',
-            'RGBD/CreateOccupancyGrid':'false',
+            'RGBD/CreateOccupancyGrid':'true',
             'Rtabmap/CreateIntermediateNodes':'true',
-            'RGBD/LinearUpdate':'1',
-            'RGBD/AngularUpdate':'1'
+            'RGBD/LinearUpdate':'0',
+            'RGBD/AngularUpdate':'0'
             }]
 
         remappings=[
