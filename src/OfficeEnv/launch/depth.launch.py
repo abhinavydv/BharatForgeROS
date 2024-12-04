@@ -8,7 +8,7 @@ from launch_ros.substitutions import FindPackageShare
 
 pkg_name = "OfficeEnv"
 
-NUM_ROBOTS = 2
+NUM_ROBOTS = 1
 
 def generate_launch_description():
     urdf_path = PathJoinSubstitution(
