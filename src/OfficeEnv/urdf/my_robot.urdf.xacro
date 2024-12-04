@@ -195,18 +195,22 @@
                 <imageTopicName>image_raw</imageTopicName>
                 <cameraInfoTopicName>camera_info</cameraInfoTopicName>
                 <frame_name>camera_link_optical</frame_name>
+                <ros>
+                    <argument>/camera/image_raw:=/camera/rgb/image_color</argument>
+                    <argument>/camera/camera_info:=/camera/rgb/camera_info</argument>
+                    <argument>/camera/depth/image_raw:=/camera/depth/image</argument>
+                    <argument>/camera/depth/camera_info:=camera_ab/depth/camera_info</argument>
+                </ros>
                 <min_depth>0.1</min_depth>
                 <max_depth>100.0</max_depth>
                 <baseline>0.2</baseline>
                 <alwaysOn>true</alwaysOn>
                 <updateRate>0.0</updateRate>
-                <cameraName>depth_camera_ir</cameraName>
-                <imageTopicName>/depth_camera/color/image_raw</imageTopicName>
-                <cameraInfoTopicName>/depth_camera/color/camera_info</cameraInfoTopicName>
+                
                 <depthImageTopicName>/depth_camera/depth/image_raw</depthImageTopicName>
                 <depthImageInfoTopicName>/depth_camera/depth/camera_info</depthImageInfoTopicName>
                 <pointCloudTopicName>/depth_camera/depth/points</pointCloudTopicName>
-                <frameName>camera_link_optical</frameName>
+
                 <pointCloudCutoff>0.5</pointCloudCutoff>
                 <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
                 <distortionK1>0.00000001</distortionK1>
@@ -219,10 +223,6 @@
                 <Cy>0</Cy>
                 <focalLength>0</focalLength>
                 <hackBaseline>0</hackBaseline>
-
-                <frame_name>camera_link_optical</frame_name>
-                <min_depth>0.1</min_depth>
-                <max_depth>100.0</max_depth>
 
             </plugin>
         </sensor>
