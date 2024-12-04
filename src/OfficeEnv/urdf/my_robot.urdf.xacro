@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <robot name="my_robot"  xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Prefix for the robot's links and joints -->
+    <xacro:property name="robot_prefix" value="$(arg robot_name)"/>
     
     <xacro:property name="base_length" value="0.6" />
     <xacro:property name="base_width" value="0.4" />
@@ -45,9 +48,9 @@
         </inertial>
     </xacro:macro>
     
-    <link name="base_footprint" />
+    <link name="${robot_prefix}/base_footprint" />
 
-    <link name="base_link">
+    <link name="${robot_prefix}/base_link">
         <visual>
             <geometry>
                 <box size="0.6 0.4 0.2" />
@@ -65,7 +68,7 @@
                            xyz="0 0 ${base_height / 2.0}" rpy="0 0 0" />
     </link>
 
-    <link name="right_wheel_link">
+    <link name="${robot_prefix}/right_wheel_link">
         <visual>
             <geometry>
                 <cylinder radius="0.1" length="0.05" />
@@ -83,7 +86,7 @@
                                     xyz="0 0 0" rpy="${pi / 2.0} 0 0" />
     </link>
 
-    <link name="left_wheel_link">
+    <link name="${robot_prefix}/left_wheel_link">
         <visual>
             <geometry>
                 <cylinder radius="0.1" length="0.05" />
@@ -101,7 +104,7 @@
                                     xyz="0 0 0" rpy="${pi / 2.0} 0 0" />
     </link>
 
-    <link name="caster_wheel_link">
+    <link name="${robot_prefix}/caster_wheel_link">
         <visual>
             <geometry>
                 <sphere radius="0.05" />
@@ -119,40 +122,40 @@
                               xyz="0 0 0" rpy="0 0 0" />
     </link>
 
-    <joint name="base_joint" type="fixed">
-        <parent link="base_footprint" />
-        <child link="base_link" />
+    <joint name="${robot_prefix}/base_joint" type="fixed">
+        <parent link="${robot_prefix}/base_footprint" />
+        <child link="${robot_prefix}/base_link" />
         <origin xyz="0 0 0.1" rpy="0 0 0"/>
     </joint>
 
-    <joint name="base_right_wheel_joint" type="continuous">
-        <parent link="base_link" />
-        <child link="right_wheel_link" />
+    <joint name="${robot_prefix}/base_right_wheel_joint" type="continuous">
+        <parent link="${robot_prefix}/base_link" />
+        <child link="${robot_prefix}/right_wheel_link" />
         <origin xyz="-0.15 -0.225 0" rpy="0 0 0" />
         <axis xyz="0 1 0" />
     </joint>
 
-    <joint name="base_left_wheel_joint" type="continuous">
-        <parent link="base_link" />
-        <child link="left_wheel_link" />
+    <joint name="${robot_prefix}/base_left_wheel_joint" type="continuous">
+        <parent link="${robot_prefix}/base_link" />
+        <child link="${robot_prefix}/left_wheel_link" />
         <origin xyz="-0.15 0.225 0" rpy="0 0 0" />
         <axis xyz="0 1 0" />
     </joint>
 
-    <joint name="base_caster_wheel_joint" type="fixed">
-        <parent link="base_link" />
-        <child link="caster_wheel_link" />
+    <joint name="${robot_prefix}/base_caster_wheel_joint" type="fixed">
+        <parent link="${robot_prefix}/base_link" />
+        <child link="${robot_prefix}/caster_wheel_link" />
         <origin xyz="0.2 0 -0.05" rpy="0 0 0" />
     </joint>
 
 
-    <joint name="camera_joint" type="fixed">
-        <parent link="base_link"/>
-        <child link="camera_link"/>
+    <joint name="${robot_prefix}/camera_joint" type="fixed">
+        <parent link="${robot_prefix}/base_link"/>
+        <child link="${robot_prefix}/camera_link"/>
         <origin xyz="0.31 0 0.1" rpy="0 0 0"/>
     </joint>
 
-    <link name="camera_link">
+    <link name="${robot_prefix}/camera_link">
         <visual>
             <geometry>
                 <box size="0.010 0.03 0.03"/>
@@ -161,16 +164,15 @@
         </visual>
     </link>
 
-
-    <joint name="camera_optical_joint" type="fixed">
-        <parent link="camera_link"/>
-        <child link="camera_link_optical"/>
+    <joint name="${robot_prefix}/camera_optical_joint" type="fixed">
+        <parent link="${robot_prefix}/camera_link"/>
+        <child link="${robot_prefix}/camera_link_optical"/>
         <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
     </joint>
 
-    <link name="camera_link_optical"></link>
+    <link name="${robot_prefix}/camera_link_optical"></link>
 
-    <gazebo reference="camera_link">
+    <gazebo reference="${robot_prefix}/camera_link">
         <material>Gazebo/Red</material>
 
         <sensor name="camera" type="depth">
@@ -191,24 +193,13 @@
             </camera>
             <plugin name="camera_plugin" filename="libgazebo_ros_camera.so">
                 <alwaysOn>true</alwaysOn>
-                <!-- <cameraName>camera1</cameraName> -->
-                <!-- <imageTopicName>image_raw</imageTopicName>
-                <cameraInfoTopicName>camera_info</cameraInfoTopicName> -->
-                <frame_name>camera_link_optical</frame_name>
-                <ros>
-                    <argument>/camera/image_raw:=/camera/rgb/image_color</argument>
-                    <argument>/camera/camera_info:=/camera/rgb/camera_info</argument>
-                    <argument>/camera/depth/image_raw:=/camera/depth/image</argument>
-                    <argument>/camera/depth/camera_info:=camera_ab/depth/camera_info</argument>
-                </ros>
-
+                <frame_name>${robot_prefix}/camera_link_optical</frame_name>
                 <min_depth>0.1</min_depth>
                 <max_depth>100.0</max_depth>
                 <baseline>0.2</baseline>
                 <alwaysOn>true</alwaysOn>
                 <updateRate>0.0</updateRate>
                 <cameraName>depth_camera_ir</cameraName>
-                <!-- <frameName>camera_link_optical</frameName> -->
                 <pointCloudCutoff>0.5</pointCloudCutoff>
                 <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
                 <distortionK1>0.00000001</distortionK1>
@@ -221,30 +212,25 @@
                 <Cy>0</Cy>
                 <focalLength>0</focalLength>
                 <hackBaseline>0</hackBaseline>
-
-                <frame_name>camera_link_optical</frame_name>
-                <min_depth>0.1</min_depth>
-                <max_depth>100.0</max_depth>
-
             </plugin>
         </sensor>
     </gazebo>
     
 
 
-    <gazebo reference="base_link">
+    <gazebo reference="${robot_prefix}/base_link">
         <material>Gazebo/Blue</material>
     </gazebo>
 
-    <gazebo reference="right_wheel_link">
+    <gazebo reference="${robot_prefix}/right_wheel_link">
         <material>Gazebo/Grey</material>
     </gazebo>
 
-    <gazebo reference="left_wheel_link">
+    <gazebo reference="${robot_prefix}/left_wheel_link">
         <material>Gazebo/Grey</material>
     </gazebo>
 
-    <gazebo reference="caster_wheel_link">
+    <gazebo reference="${robot_prefix}/caster_wheel_link">
         <material>Gazebo/Grey</material>
         <mu1 value="0.1" />
         <mu2 value="0.1" />
@@ -255,8 +241,8 @@
             <!-- Update rate in Hz -->
             <update_rate>50</update_rate>
             <!-- wheels -->
-            <left_joint>base_left_wheel_joint</left_joint>
-            <right_joint>base_right_wheel_joint</right_joint>
+            <left_joint> ${robot_prefix}/base_left_wheel_joint </left_joint>
+            <right_joint> ${robot_prefix}/base_right_wheel_joint </right_joint>
             <!-- kinematics -->
             <wheel_separation>0.45</wheel_separation>
             <wheel_diameter>0.2</wheel_diameter>
@@ -264,9 +250,9 @@
             <publish_odom>true</publish_odom>
             <publish_odom_tf>true</publish_odom_tf>
             <publish_wheel_tf>true</publish_wheel_tf>
-            <odometry_topic>odom</odometry_topic>
-            <odometry_frame>odom</odometry_frame>
-            <robot_base_frame>base_footprint</robot_base_frame>
+            <odometry_topic>${robot_prefix}/odom</odometry_topic>
+            <odometry_frame>${robot_prefix}/odom</odometry_frame>
+            <robot_base_frame> ${robot_prefix}/base_footprint </robot_base_frame>
         </plugin>
     </gazebo>
 </robot>
