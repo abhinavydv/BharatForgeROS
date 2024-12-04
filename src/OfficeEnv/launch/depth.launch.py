@@ -2,10 +2,11 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+from launch_ros.actions import SetParameter
 from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 
-pkg_name = "OfficeEnv"
+pkg_name = "depth"
 
 def generate_launch_description():
     urdf_path = PathJoinSubstitution(
@@ -16,6 +17,9 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+
+        SetParameter(name='use_sim_time', value=True),
+
         DeclareLaunchArgument(
             'urdf_path',
             default_value=urdf_path,
@@ -32,10 +36,10 @@ def generate_launch_description():
             output='screen',
             arguments=['-d', LaunchConfiguration('rviz_config_path')]
         ),
-        Node(
-            package=pkg_name,
-            executable='image_saver'
-        ),
+        # Node(
+        #     package=pkg_name,
+        #     executable='image_saver'
+        # ),
         Node(
             package='joint_state_publisher_gui',
             executable='joint_state_publisher_gui'
