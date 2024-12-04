@@ -191,9 +191,9 @@
             </camera>
             <plugin name="camera_plugin" filename="libgazebo_ros_camera.so">
                 <alwaysOn>true</alwaysOn>
-                <cameraName>camera1</cameraName>
-                <imageTopicName>image_raw</imageTopicName>
-                <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+                <!-- <cameraName>camera1</cameraName> -->
+                <!-- <imageTopicName>image_raw</imageTopicName>
+                <cameraInfoTopicName>camera_info</cameraInfoTopicName> -->
                 <frame_name>camera_link_optical</frame_name>
                 <ros>
                     <argument>/camera/image_raw:=/camera/rgb/image_color</argument>
@@ -201,16 +201,19 @@
                     <argument>/camera/depth/image_raw:=/camera/depth/image</argument>
                     <argument>/camera/depth/camera_info:=camera_ab/depth/camera_info</argument>
                 </ros>
+
                 <min_depth>0.1</min_depth>
                 <max_depth>100.0</max_depth>
                 <baseline>0.2</baseline>
                 <alwaysOn>true</alwaysOn>
                 <updateRate>0.0</updateRate>
-                
+                <cameraName>depth_camera_ir</cameraName>
+                <imageTopicName>/depth_camera/color/image_raw</imageTopicName>
+                <cameraInfoTopicName>/depth_camera/color/camera_info</cameraInfoTopicName>
                 <depthImageTopicName>/depth_camera/depth/image_raw</depthImageTopicName>
                 <depthImageInfoTopicName>/depth_camera/depth/camera_info</depthImageInfoTopicName>
                 <pointCloudTopicName>/depth_camera/depth/points</pointCloudTopicName>
-
+                <!-- <frameName>camera_link_optical</frameName> -->
                 <pointCloudCutoff>0.5</pointCloudCutoff>
                 <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
                 <distortionK1>0.00000001</distortionK1>
@@ -223,6 +226,10 @@
                 <Cy>0</Cy>
                 <focalLength>0</focalLength>
                 <hackBaseline>0</hackBaseline>
+
+                <frame_name>camera_link_optical</frame_name>
+                <min_depth>0.1</min_depth>
+                <max_depth>100.0</max_depth>
 
             </plugin>
         </sensor>
@@ -267,67 +274,4 @@
             <robot_base_frame>base_footprint</robot_base_frame>
         </plugin>
     </gazebo>
-
-    <joint name="laser_joint" type="fixed">
-        <parent link="base_link"/>
-        <child link="laser_frame"/>
-        <origin xyz="0.122 0 0.212" rpy="0 0 0"/>
-    </joint>
-
-    <link name="laser_frame">
-        <visual>
-            <geometry>
-                <cylinder radius="0.05" length="0.04"/>
-            </geometry>
-            <material name="grey"/>
-        </visual>
-        <visual>
-            <origin xyz="0 0 -0.05"/>
-            <geometry>
-                <cylinder radius="0.01" length="0.1"/>
-            </geometry>
-            <material name="grey"/>
-        </visual>
-        <collision>
-            <geometry>
-                <cylinder radius="0.05" length="0.04"/>
-            </geometry>
-        </collision>
-        <xacro:cylinder_inertia m="0.1" r="0.05" h="0.04" 
-                                    xyz="0 0 0" rpy="0 0 0" />
-    </link>
-
-
-
-    <gazebo reference="laser_frame">
-        <material>Gazebo/grey</material>
-
-        <sensor name="laser" type="ray">
-            <pose> 0 0 0 0 0 0 </pose>
-            <visualize>true</visualize>
-            <update_rate>10</update_rate>
-            <ray>
-                <scan>
-                    <horizontal>
-                        <samples>360</samples>
-                        <min_angle>-3.14</min_angle>
-                        <max_angle>3.14</max_angle>
-                    </horizontal>
-                </scan>
-                <range>
-                    <min>0.3</min>
-                    <max>12</max>
-                </range>
-            </ray>
-            <plugin name="laser_controller" filename="libgazebo_ros_ray_sensor.so">
-                <ros>
-                    <argument>~/out:=scan</argument>
-                </ros>
-                <output_type>sensor_msgs/LaserScan</output_type>
-                <frame_name>laser_frame</frame_name>
-                
-            </plugin>
-        </sensor>
-    </gazebo>
-    
 </robot>
