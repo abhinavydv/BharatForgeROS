@@ -23,14 +23,15 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='root',
-    maintainer_email='abhinavyadavdev@gmail.com',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    maintainer_email='',
+    description='',
+    license='',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             "tf_publisher = OfficeEnv2.tf_publisher:main",
             "swarm_to_one_bot = OfficeEnv2.swarm_to_one_bot:main",
+            "recogniser = OfficeEnv2.recogniser:main"
         ],
     },
 )
