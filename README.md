@@ -1,2 +1,5 @@
 # BharatForgeROS
-The Solution for Bharat Forge PS at Inter IIT 2024
+
+## Running
+- ros2 launch OfficeEnv2 depth.launch.py
+- ros2 launch OfficeEnv2 cartographer.launch.py
