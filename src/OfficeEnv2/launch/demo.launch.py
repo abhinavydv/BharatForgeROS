@@ -1,21 +1,3 @@
-
-# Example to run rgbd datasets:
-# [ROS1] Prepare ROS1 rosbag for conversion to ROS2
-#   $ wget http://vision.in.tum.de/rgbd/dataset/freiburg3/rgbd_dataset_freiburg3_long_office_household.bag
-#   $ rosbag decompress rgbd_dataset_freiburg3_long_office_household.bag
-#   $ wget https://raw.githubusercontent.com/srv/srv_tools/kinetic/bag_tools/scripts/change_frame_id.py
-#   Edit change_frame_id.py, remove/comment lines beginning with "PKG" and "import roslib", change line "Exception, e" to "Exception"
-#   $ roscore
-#   $ python3 change_frame_id.py -o rgbd_dataset_freiburg3_long_office_household_frameid_fixed.bag -i rgbd_dataset_freiburg3_long_office_household.bag -f openni_rgb_optical_frame -t /camera/rgb/image_color
-# [ROS2]
-#   $ sudo pip install rosbags     # See https://docs.openvins.com/dev-ros1-to-ros2.html
-#   $ rosbags-convert rgbd_dataset_freiburg3_long_office_household_frameid_fixed.bag
-
-#   $ ros2 launch rtabmap_examples rgbdslam_datasets.launch.py
-#   $ cd rgbd_dataset_freiburg3_long_office_household_frameid_fixed
-#   $ ros2 bag play rgbd_dataset_freiburg3_long_office_household_frameid_fixed.db3 --clock
-
-
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable, GroupAction
 from launch.substitutions import LaunchConfiguration

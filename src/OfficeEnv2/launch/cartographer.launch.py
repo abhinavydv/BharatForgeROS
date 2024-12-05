@@ -47,26 +47,18 @@ def generate_launch_description():
         nodes.append(Node(
             package='cartographer_ros',
             executable='cartographer_node',
-            name=f'cartographer_node_{i}',
+            name=f'cartographer_node',
             output='screen',
             namespace=f'robot_{i}',
             remappings=[
                 # ('/tf', f'/robot_{i}/tf'),
                 # ("/tf_static", f"/robot_{i}/tf_static"),
-                ("/scan", f"/robot_{i}/scan"),
-                ("/odom", f"/robot_{i}/odom"),
+                # ("/scan", f"/robot_{i}/scan"),
+                # (f"/robot_{i}/odom", f"/robot_{i}/filtered_odom"),
             ],
             arguments=['-configuration_directory', cartographer_config_dir,
                        '-configuration_basename', configuration_basename]
         ))
-
-    # nodes.append(Node(
-    #     package="OfficeEnv2",
-    #     executable="swarm_to_one_bot",
-    #     name=f"swarm_to_one_bot",
-    #     output="screen",
-    #     arguments=[str(NUM_ROBOTS)]
-    # ))
 
         nodes.append(Node(
             package='cartographer_ros',
@@ -83,6 +75,14 @@ def generate_launch_description():
                 ("/constraint_list", f"robot_{i}/constraint_list"),
             ]
         ))
+
+    # nodes.append(Node(
+    #     package="OfficeEnv2",
+    #     executable="swarm_to_one_bot",
+    #     name=f"swarm_to_one_bot",
+    #     output="screen",
+    #     arguments=[str(NUM_ROBOTS)]
+    # ))
 
     return LaunchDescription([
         SetParameter(name='use_sim_time', value=True),
