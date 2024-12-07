@@ -37,9 +37,6 @@ def generate_launch_description():
                 parameters=[{
                     'robot_description': Command(['xacro ', LaunchConfiguration('urdf_path'), f" robot_name:=robot_{i}"])
                 }],
-                remappings=[
-                    ("/robot_description", f"/robot_{i}/robot_description"),
-                ],
             ),
         )
 
@@ -48,28 +45,6 @@ def generate_launch_description():
                 package='gazebo_ros',
                 executable='spawn_entity.py',
                 arguments=['-topic', f'robot_{i}/robot_description', '-robot_namespace', f'/robot_{i}', '-entity', f'robot_{i}', '-x', str(positions[i][0]), '-y', str(positions[i][1]), '-z', '0.0']
-            )
-        )
-
-        # tf_s.append(
-        #     Node(
-        #         package='tf2_ros',
-        #         executable='static_transform_publisher',
-        #         arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', '/world', f'/robot_{i}/odom']
-        #     )
-        # )
-        
-        tf_s.append(
-            Node(
-                package=pkg_name,
-                executable="tf_publisher",
-                name=f"tf_publisher",
-                output="screen",
-                namespace=f"robot_{i}",
-                # parameters=[{
-                #     "robot_index": i
-                # }],
-                arguments=[str(i)]
             )
         )
 

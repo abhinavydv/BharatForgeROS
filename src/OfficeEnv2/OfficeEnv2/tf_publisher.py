@@ -1,12 +1,5 @@
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import Image
-from nav_msgs.msg import OccupancyGrid
-from cv_bridge import CvBridge
-import cv2
-import time
-import numpy as np
-import os
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import TransformStamped
 from tf2_ros import TransformBroadcaster

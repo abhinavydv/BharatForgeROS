@@ -8,7 +8,7 @@ from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
 import os
 
-NUM_ROBOTS = 4
+NUM_ROBOTS = 1
 
 pkg_name = "OfficeEnv2"
 
