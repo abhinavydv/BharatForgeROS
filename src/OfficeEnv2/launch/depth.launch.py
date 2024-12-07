@@ -8,7 +8,7 @@ from launch_ros.substitutions import FindPackageShare
 
 pkg_name = "OfficeEnv2"
 
-NUM_ROBOTS = 4
+NUM_ROBOTS = 1
 positions = [
     (-1, 1),
     (-12, 14),

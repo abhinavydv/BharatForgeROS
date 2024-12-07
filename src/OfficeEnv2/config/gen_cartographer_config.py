@@ -5,10 +5,10 @@ include "trajectory_builder.lua"
 options = {
   map_builder = MAP_BUILDER,
   trajectory_builder = TRAJECTORY_BUILDER,
-  map_frame = "world",
+  map_frame = "{{ robot }}/map",
   tracking_frame = "{{ robot }}/base_footprint",
-  published_frame = "{{ robot }}/odom",
-  odom_frame = "{{ robot }}/odom",
+  published_frame = "{{ robot }}/map",
+  odom_frame = "world",
   provide_odom_frame = false,
   publish_frame_projected_to_2d = true,
   use_odometry = true,

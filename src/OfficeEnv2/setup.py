@@ -31,7 +31,9 @@ setup(
         'console_scripts': [
             "tf_publisher = OfficeEnv2.tf_publisher:main",
             "swarm_to_one_bot = OfficeEnv2.swarm_to_one_bot:main",
-            "recogniser = OfficeEnv2.recogniser:main"
+            "recogniser = OfficeEnv2.recogniser:main",
+            "debug = OfficeEnv2.debug:main",
+            "robot_controller = OfficeEnv2.robot_controller:main",
         ],
     },
 )
