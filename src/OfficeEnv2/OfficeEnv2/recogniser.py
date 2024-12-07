@@ -7,43 +7,45 @@ from sensor_msgs.msg import Image
 from ultralytics import YOLO
 import numpy as np
 import cv2, math
-import time
+import time, json
+from std_msgs.msg import String
 
 MIN_DELTA_T_FOR_REFRESH = 0.8 # secs
 CAMERA_FOV = 1.089 # rad
 
 class Recogniser(Node):
-    def __init__(self):
-        super().__init__('recogniser')
+    def __init__(self, name:str, verbose:bool):
+        super().__init__(f'{name}/recogniser')
+        self.name = name
+        self.verbose = verbose
+        
         self.model = YOLO("yolov8m-seg.pt")
 
         # subscribe to rgb camera
         self.rgb_subscription = self.create_subscription(
             Image,
-            '/robot_0/camera/image_raw',
+            f'/{self.name}/camera/image_raw',
             self.rgb_callback,
             10)
         
         # subscribe to depth camera
         self.depth_subscription = self.create_subscription(
             Image,
-            '/robot_0/camera/depth/image_raw',  # Replace with your depth topic
+            f'/{self.name}/camera/depth/image_raw',  # Replace with your depth topic
             self.depth_callback,
             10
         )
 
         # Subscribe to the /odom topic
-        self.subscription = self.create_subscription(
+        self.odom_subscription = self.create_subscription(
             Odometry,
-            '/robot_0/odom',  # Replace with your odom topic name if different
+            f'/{self.name}/odom',  # Replace with your odom topic name if different
             self.odom_callback,
             10
         )
 
-        self.get_logger().info('Recogniser node started')
+        self.object_publisher = self.create_publisher(String, '/map_updates', 10)
 
-        self.last_saved_time_rgb = time.time()
-        self.last_saved_time_depth = time.time()
 
         self.W = 0
         
@@ -55,6 +57,11 @@ class Recogniser(Node):
 
         self.current_heading = 0
         self.current_position = []
+
+        self.get_logger().info('Recogniser node started')
+
+        self.last_saved_time_rgb = time.time()
+        self.last_saved_time_depth = time.time()
 
 
     def rgb_callback(self, msg):
@@ -79,6 +86,7 @@ class Recogniser(Node):
                 # get name of current object
                 try:
                     current_obj = result.names[int(result.boxes.cls.item())]
+                    # print(f'Cur Obj = {current_obj}')
                     self.current_objects.append(current_obj)
                     #print(result.boxes, result.boxes[0])
                     #print('DATA:',result.masks.data, '\nLEN:', len(result.masks.data))
@@ -92,9 +100,11 @@ class Recogniser(Node):
 
                         # get "rgb" pixels corresponding to depth pixels
                         self.current_pixels.append(obj_pixels)
+                        #print(obj_pixels.shape)
 
                         # get object (depth cluster) center
-                        self.current_objects_centers.append(np.mean(obj_pixels, axis=0))
+                        self.current_objects_centers.append(np.mean(obj_pixels, axis=1))
+                        print(self.current_objects_centers[-1])
                         
                 except Exception as e:
                     pass
@@ -109,6 +119,8 @@ class Recogniser(Node):
             self.current_depth_map = []
             self.current_depth_image = []
 
+            #print('depth_callback')
+
             try:
                 # get encoding type
                 if msg.encoding == '16UC1':
@@ -120,7 +132,8 @@ class Recogniser(Node):
                     return
                 
                 # Get depth image, assuming rgb info arrives before depth
-                self.current_depth_image = np.frombuffer(msg.data, dtype=dtype).reshape(msg.height, msg.width)
+                self.current_depth_image = np.frombuffer(msg.data, dtype=dtype).reshape(msg.width, msg.height)
+                #print('Depth Image Shape:', self.current_depth_image.shape)
                 
                 # Get depth map
                 self.current_depth_map = [
@@ -162,16 +175,18 @@ class Recogniser(Node):
     
     # updates position and orientation of robot
     def odom_callback(self, msg):
-        # Extract the quaternion from the odometry message
         orientation_q = msg.pose.pose.orientation
         self.current_heading = self.quaternion_to_yaw(orientation_q)
-        self.current_position = [msg.pose.pose.position.x, msg.pose.pose.position.y]
+        self.odom_position = [msg.pose.pose.position.x, msg.pose.pose.position.y]
+        self.global_position = [self.odom_position[0], self.odom_position[1]]
+        # print(f'odom pose: [{self.odom_position[0]}, {self.odom_position[1]}]')
+        # print(f'global pose: [{self.global_position[0]}, {self.global_position[1]}]')
 
     
-    # process trigonometry to get an object's position with respect to the bot
+     # process trigonometry to get an object's position with respect to the bot
     def process(self):
         # get heading
-        heading = self.current_heading
+        heading = -self.current_heading
         
         for i in range(len(self.current_objects)):
             # find the object's "offset" in the image
@@ -183,19 +198,39 @@ class Recogniser(Node):
             
             # the actual position of the object with respect to robot
             theta = heading + delta_theta
+            if theta > math.pi:
+                theta = math.pi
+            if theta > math.pi/2:
+                theta = math.pi - theta
+            elif theta < -math.pi/2:
+                theta = -math.pi - theta
             
+            #print(f'heading={heading}')
+            #print(f'w={w}\nW={W}\nr={r}\ndelta={delta_theta}\ntheta={theta}')
+
             # get corresponding x and y
-            relative_xy = [r*math.sin(theta), r*math.cos(theta)]
+            x = r*math.sin(theta)
+            y = r*math.cos(theta)
+            relative_xy = [x, y]
             
-            self.current_objects_dists.append(relative_xy)
+            actual_xy = [relative_xy[i] + self.global_position[i] for i in range(2)]
+            
+            self.current_objects_dists.append(actual_xy)
+            
+            if self.verbose:
+                print('Object: ', self.current_objects[i], ' is @ ', relative_xy,' in robot frame')
+                print('Object: ', self.current_objects[i], ' is @ ', actual_xy,' in global frame')
 
-            print('Object: ', self.current_objects[i], ' is @ ', relative_xy)
+            # TODO: some filtering
+
+            msg = String()
+            msg.data = json.dumps([self.current_objects[i],actual_xy[0],actual_xy[1]])
+            self.object_publisher.publish(msg)
 
 
-
-def main(args=None):
-    rclpy.init(args=args)
-    recogniser = Recogniser()
+def main(robot_name='robot_0', verbose=False):
+    rclpy.init(args=None)
+    recogniser = Recogniser(robot_name, verbose)
     rclpy.spin(recogniser)
     recogniser.destroy_node()
     rclpy.shutdown()
